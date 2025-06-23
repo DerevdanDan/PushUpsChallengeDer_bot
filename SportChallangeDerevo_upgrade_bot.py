@@ -1,4 +1,5 @@
 import asyncio
+from email.mime import application
 import logging
 from datetime import datetime, timedelta, time
 from typing import Dict, Any, List, Optional
@@ -6,6 +7,9 @@ import json
 import os
 import pytz
 from enum import Enum
+import logging
+from datetime import datetime
+
 
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler, JobQueue
@@ -16,6 +20,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
 BOT_TOKEN = ('8190480914:AAGzLaf9Om4aTPc6yXSyXk8-8ar09G_styk')
 # Bot token - replace with your actual bot token
 import os
@@ -203,8 +208,14 @@ bot_instance = FitnessChallengeBot()
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command"""
     user = update.effective_user
-    username = user.first_name or user.username or "User"
-    
+    user_id = str(user.id)
+    username = user.first_name or user.username or "Unknown"
+
+    bot_instance = FitnessChallengeBot()
+    bot_instance.load_user_data(user_id)
+
+    logger.info(f"🆕 NEW USER: {username} (ID: {user_id}) started the bot")
+
     # Create main menu keyboard
     keyboard = [
         [KeyboardButton("🆕 New Challenge"), KeyboardButton("📊 My Challenges")],
@@ -467,8 +478,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle all text messages"""
     message_text = update.message.text
     user = update.effective_user
-    username = user.first_name or user.username or "User"
+    username = user.first_name or user.username or "Unknown"
     user_id = str(user.id)
+
+    logger.info(f"👤 USER ACTIVITY: {username} (ID: {user_id}) used: {message_text}")
+
     
     # Handle menu buttons
     if message_text == "🆕 New Challenge":
@@ -622,6 +636,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"{username}, please use the menu buttons to navigate! 👇"
         )
 
+async def log_daily_summary(context: ContextTypes.DEFAULT_TYPE):
+    """Log daily user summary for Railway"""
+    total_users = len(bot_instance.user_data)
+    active_challenges = 0
+    
+    for user_data in bot_instance.user_data.values():
+        for challenge in user_data.get('challenges', {}).values():
+            if challenge.get('status') == 'active':
+                active_challenges += 1
+    
+    logger.info(f"📊 DAILY SUMMARY: {total_users} total users, {active_challenges} active challenges")
+
 async def send_daily_reminders(context: ContextTypes.DEFAULT_TYPE):
     """Send daily reminders to users with active challenges"""
     for user_id, user_data in bot_instance.user_data.items():
@@ -672,11 +698,21 @@ def main():
     # Create application
     application = Application.builder().token(BOT_TOKEN).build()
     
+    logger.info("🚀 FITNESS BOT STARTING ON RAILWAY")
+    logger.info(f"📅 Started at: {datetime.now()}")
+
     # Add handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(handle_callback_query))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
+    job_queue = application.job_queue
+    job_queue.run_daily(
+        log_daily_summary,
+        time=time(hour=23, minute=59),  # 11:59 PM daily
+        name="daily_summary"
+    )
+
     # Add job queue for reminders
     job_queue = application.job_queue
     
@@ -694,6 +730,9 @@ def main():
         name="evening_reminder"
     )
     
+    logger.info("💪 Bot ready to help users achieve fitness goals!")
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
+
     # Start the bot
     print("🤖 Advanced Fitness Challenge Bot is starting...")
     print("💪 Ready to help users achieve their fitness goals!")
