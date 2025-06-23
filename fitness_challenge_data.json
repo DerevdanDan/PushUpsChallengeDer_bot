@@ -1,0 +1,35 @@
+{
+  "1059153162": {
+    "challenges": {},
+    "timezone": "UTC",
+    "reminder_times": {
+      "morning": "09:00",
+      "evening": "20:00"
+    },
+    "reminders_enabled": true
+  },
+  "15260416": {
+    "challenges": {
+      "PUSHUPS_20250620_145538": {
+        "id": "PUSHUPS_20250620_145538",
+        "exercise": "push-ups",
+        "total_reps": 10000,
+        "target_days": 100,
+        "current_reps": 30,
+        "start_date": "2025-06-20T14:55:38.750943",
+        "target_date": "2025-09-28T14:55:38.750951",
+        "status": "active",
+        "daily_records": {
+          "2025-06-20": 30
+        },
+        "daily_target": 100.0
+      }
+    },
+    "timezone": "UTC",
+    "reminder_times": {
+      "morning": "09:00",
+      "evening": "20:00"
+    },
+    "reminders_enabled": true
+  }
+}
