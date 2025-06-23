@@ -218,8 +218,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🎯 Create personalized fitness challenges\n"
         "📊 Track multiple exercises simultaneously\n"
         "📅 Get daily reminders and progress updates\n"
-        "Help me to buy more protein:)\n"
-        "coff.ee/gowk3mb\n\n"
         "🏆 Achieve your fitness goals step by step!\n\n"
         "Choose an option below to get started:"
     )
