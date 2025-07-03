@@ -211,8 +211,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(user.id)
     username = user.first_name or user.username or "Unknown"
 
-    bot_instance = FitnessChallengeBot()
-    bot_instance.load_user_data(user_id)
+    # bot_instance is already initialized globally, no need to re-initialize here
+    # bot_instance = FitnessChallengeBot() # Remove or comment out this line if bot_instance is already global
+    
+    # Corrected line: Use get_user_data to ensure user data is loaded/initialized
+    bot_instance.get_user_data(user_id) 
 
     logger.info(f"🆕 NEW USER: {username} (ID: {user_id}) started the bot")
 
@@ -234,7 +237,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     
     await update.message.reply_text(welcome_message, reply_markup=reply_markup)
-
+    
 async def handle_new_challenge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle new challenge creation"""
     user = update.effective_user
