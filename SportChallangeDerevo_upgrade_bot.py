@@ -223,7 +223,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [KeyboardButton("🆕 New Challenge"), KeyboardButton("📊 My Challenges")],
         [KeyboardButton("➕ Add Reps"), KeyboardButton("📈 Progress")],
-        [KeyboardButton("⚙️ Settings"), KeyboardButton("📚 Exercise Guide")]
+        [KeyboardButton("⚙️ Settings"), KeyboardButton("📚 Exercise Guide")],
+        [KeyboardButton("🤝 Support the Bot")]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
@@ -500,6 +501,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handle_settings(update, context)
     elif message_text == "📚 Exercise Guide":
         await handle_exercise_guide(update, context)
+    elif message_text == "🤝 Support the Bot": # New condition
+        support_message = (
+        "Thank you for considering supporting the Fitness Challenge Bot! 🙏\n\n"
+        "Your support helps keep the bot running and allows for new features.\n\n"
+        "You can tip the developer here: [Tip Here!](https://coff.ee/gowk3mb)\n\n"
+        "Every bit helps! ✨")
+        await update.message.reply_text(support_message, parse_mode='Markdown')
+    
     
     # Handle challenge creation flow
     elif context.user_data.get('challenge_step') == 'total_reps':
@@ -633,6 +642,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 f"{username}, please enter a valid number! 🔢"
             )
+    
     
     else:
         await update.message.reply_text(
