@@ -507,7 +507,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Your support helps keep the bot running and allows for new features.\n\n"
         "You can tip the developer here: [Tip Here!](https://coff.ee/gowk3mb)\n\n"
         "Every bit helps! ✨")
-        await update.message.reply_text(support_message, parse_mode='Markdown')
+        await update.message.reply_text(support_message, parse_mode='Markdown', disable_web_page_preview=True)
     
     
     # Handle challenge creation flow
